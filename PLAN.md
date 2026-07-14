@@ -19,7 +19,7 @@ Monorepo with npm workspaces:
 - `packages/shared`: types and the graph store format. No heavy dependencies.
 - `packages/indexer`: scans a repo, parses JS/TS with ts-morph, builds file nodes and import edges with graphology, detects communities with Louvain, ranks god nodes by centrality, optionally generates LLM summaries by shelling out to the `claude` CLI (reuses existing login, no API keys). Persists to `.codemap/graph.json` in the target repo with per-file content hashes for incremental re-indexing.
 - `packages/mcp`: stdio MCP server exposing `get_overview`, `node_context`, `search_nodes`, `impact_of`. Reads the graph store. Works with any MCP client, not just Claude Code.
-- `packages/server`: WebSocket sync server (Yjs, same approach as syncboard). Holds the live session doc: graph state, agent events, pending node prompts. Also an HTTP endpoint that Claude Code hooks POST tool events to, and a file watcher that triggers incremental re-index so the map never lies.
+- `packages/server`: WebSocket sync server (Yjs). Holds the live session doc: graph state, agent events, pending node prompts. Also an HTTP endpoint that Claude Code hooks POST tool events to, and a file watcher that triggers incremental re-index so the map never lies.
 - `packages/web`: React + Vite + sigma.js. Force-directed graph colored by community, node side panel, event timeline, prompt composer on node click.
 
 ## Steering mechanics, honestly

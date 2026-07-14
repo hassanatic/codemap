@@ -32,7 +32,7 @@ indexer  ──►  .codemap/graph.json  ──►  mcp server  ──►  any M
 
 - **indexer**: parses JS/TS with ts-morph, builds file nodes and import edges, finds modules with Louvain community detection, flags the most connected files as god nodes, and generates summaries through the `claude` CLI so it reuses your existing login. Re-indexing is incremental by content hash, and the live server re-indexes automatically on file change so the map never lies.
 - **mcp server**: `get_overview`, `node_context`, `search_nodes`, and `impact_of` (transitive dependents of a file, the thing grep cannot tell you). Works with any MCP client.
-- **live server**: a Yjs sync host, the same CRDT engine as [syncboard](https://github.com/hassanatic/syncboard). The graph, the agent event stream, and pending directives are one shared document, so every open browser sees the same live state.
+- **live server**: a Yjs CRDT sync host. The graph, the agent event stream, and pending directives are one shared document, so every open browser sees the same live state and updates arrive with no polling.
 - **web ui**: sigma.js force graph colored by module, node inspector with summaries and dependency lists, live activity feed, and a prompt composer on every node.
 
 ## Numbers from a real repo
@@ -50,20 +50,21 @@ An honest note: on small repos, raw token cost is similar either way, because ex
 ```bash
 npm install && npm run build
 
-# 1. index your repo (summaries need the claude CLI)
-node packages/indexer/dist/cli.js index /path/to/repo --summaries
-
-# 2. live server
-node packages/server/dist/index.js /path/to/repo
-
-# 3. ui
-npm run dev -w @codemap/web    # http://localhost:4401
-
-# 4. agent memory for any Claude Code session
-claude mcp add codemap -- node $(pwd)/packages/mcp/dist/index.js
+# index a repo, start the live server and the ui, all in one command
+npm run up -- /path/to/repo --summaries
 ```
 
-To stream a session's activity onto the map and deliver node directives, add the two hooks from [docs/setup.md](docs/setup.md).
+Open http://localhost:4401 and the map is live. `--summaries` uses the `claude`
+CLI (your existing login, no API keys) to describe each module and each highly
+connected file; drop the flag for a fast structure-only index.
+
+To give agents the graph as memory, register the MCP server once:
+
+```bash
+claude mcp add --scope user codemap -- node $(pwd)/packages/mcp/dist/index.js
+```
+
+To stream a session's activity onto the map and deliver node directives, add the two hooks from [docs/setup.md](docs/setup.md) to the repo you are working on.
 
 ## Scope and roadmap
 

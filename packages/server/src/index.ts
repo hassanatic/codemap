@@ -3,7 +3,7 @@
 //
 // It does three jobs:
 // 1. Yjs sync host: browsers connect over WebSocket and share the session doc
-//    (graph snapshot, agent events, node prompts). Same engine as syncboard.
+//    (graph snapshot, agent events, node prompts).
 // 2. Hook inbox: Claude Code hooks POST tool events to /events, and the
 //    UserPromptSubmit hook GETs /prompts/pending to pick up node directives.
 // 3. Map keeper: a file watcher re-indexes the repo on change so the graph
