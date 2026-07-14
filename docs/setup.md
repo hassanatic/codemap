@@ -1,5 +1,16 @@
 # Setting up codemap for a repo
 
+The short way is the installer plus one command:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/hassanatic/codemap/main/install.sh | bash
+cd /path/to/your/repo && codemap up --summaries
+```
+
+`codemap up` does every step on this page automatically and is safe to re-run.
+The rest of this document is the manual version, useful if you want to
+understand the pieces or wire them differently.
+
 Four pieces: index the repo, run the live server, open the UI, connect your agent.
 
 ## 1. Index

@@ -47,24 +47,33 @@ An honest note: on small repos, raw token cost is similar either way, because ex
 
 ## Quick start
 
-```bash
-npm install && npm run build
-
-# index a repo, start the live server and the ui, all in one command
-npm run up -- /path/to/repo --summaries
-```
-
-Open http://localhost:4401 and the map is live. `--summaries` uses the `claude`
-CLI (your existing login, no API keys) to describe each module and each highly
-connected file; drop the flag for a fast structure-only index.
-
-To give agents the graph as memory, register the MCP server once:
+Install once:
 
 ```bash
-claude mcp add --scope user codemap -- node $(pwd)/packages/mcp/dist/index.js
+curl -fsSL https://raw.githubusercontent.com/hassanatic/codemap/main/install.sh | bash
 ```
 
-To stream a session's activity onto the map and deliver node directives, add the two hooks from [docs/setup.md](docs/setup.md) to the repo you are working on.
+Then, inside any project:
+
+```bash
+codemap up --summaries
+```
+
+That one command indexes the repo, wires the Claude Code hooks into
+`.claude/settings.local.json`, adds `.codemap/` to your `.gitignore`,
+registers the MCP server once for all your projects, and serves the live map
+at http://localhost:4401. It is idempotent, so run it again any time and it
+only changes what is missing.
+
+`--summaries` uses the `claude` CLI (your existing login, no API keys) to
+describe each module and each highly connected file. Drop the flag for a fast
+structure-only index. Requirements: node 20+, git, and the Claude Code CLI
+for summaries, hooks, and MCP.
+
+Now run `claude` in the project like normal. Files flash on the map as the
+agent reads and edits them, and clicking any node lets you send it a directive
+anchored to that file. Manual setup steps, if you prefer doing it yourself,
+are in [docs/setup.md](docs/setup.md).
 
 ## Scope and roadmap
 
