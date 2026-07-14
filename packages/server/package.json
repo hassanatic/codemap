@@ -1,0 +1,25 @@
+{
+  "name": "@codemap/server",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "codemap-server": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@codemap/indexer": "*",
+    "@codemap/shared": "*",
+    "chokidar": "^3.6.0",
+    "ws": "^8.18.0",
+    "y-websocket": "^1.5.4",
+    "yjs": "^13.6.20"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/ws": "^8.5.10",
+    "typescript": "^5.5.0"
+  }
+}
