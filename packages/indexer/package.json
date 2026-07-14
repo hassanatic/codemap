@@ -1,0 +1,24 @@
+{
+  "name": "@codemap/indexer",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "codemap": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@codemap/shared": "*",
+    "fast-glob": "^3.3.2",
+    "graphology": "^0.25.4",
+    "graphology-communities-louvain": "^2.0.1",
+    "ts-morph": "^23.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.5.0"
+  }
+}
