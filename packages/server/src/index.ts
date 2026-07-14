@@ -85,6 +85,7 @@ function eventFromHook(body: any): AgentEvent | undefined {
     file,
     detail,
     sessionId: body.session_id,
+    repo: repoRoot,
   };
 }
 

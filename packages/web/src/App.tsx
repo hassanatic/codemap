@@ -41,11 +41,14 @@ export default function App() {
           />
           <GraphView
             graph={graph}
-            events={events}
+            events={events.filter((e) => e.repo === graph.root)}
             selected={selected}
             onSelect={setSelected}
           />
-          <EventFeed events={events} onSelect={setSelected} />
+          <EventFeed
+            events={events.filter((e) => e.repo === graph.root)}
+            onSelect={setSelected}
+          />
         </main>
       )}
     </div>

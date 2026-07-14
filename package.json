@@ -7,7 +7,7 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "npm run build --workspaces --if-present",
+    "build": "npm run build -w @codemap/shared && npm run build -w @codemap/indexer && npm run build -w @codemap/mcp && npm run build -w @codemap/server && npm run build -w @codemap/web",
     "index": "node packages/indexer/dist/cli.js",
     "dev:server": "node packages/server/dist/index.js",
     "dev:web": "npm run dev -w @codemap/web"

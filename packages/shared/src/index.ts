@@ -80,6 +80,9 @@ export interface AgentEvent {
   detail: string;
   /** session identifier from the harness */
   sessionId?: string;
+  /** absolute repo root this event belongs to; the UI filters on it so
+   * events from a previous repo's session never leak into another map */
+  repo?: string;
 }
 
 // A directive the user attached to a node in the UI. Delivered to the agent
