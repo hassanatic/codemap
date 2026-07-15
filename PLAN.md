@@ -42,8 +42,8 @@ MCP is request/response, so a server cannot push a message into a running sessio
 
 ## Scope guards for v1
 
-- JS/TS only. Other languages later.
-- Nodes are files. Function-level nodes are v2.
+- File-level nodes for any language: precise JS/TS edges via the TypeScript compiler, resolver-based edges for Python, Dart, and Markdown, generic import matching elsewhere, directory grouping when there are no links at all.
+- Function-level nodes are v2.
 - GitHub URL import is v3. Local repos first.
 - No auth, no multi-tenant. Localhost tool first, product later.
 

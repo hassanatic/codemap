@@ -87,12 +87,18 @@ export async function summarizeGraph(repoRoot: string, graph: CodeGraph): Promis
 
   const nodeById = new Map(graph.nodes.map((n) => [n.id, n]));
   await pool(communities, async (community) => {
-    const fileList = community.members
-      .map((m) => {
-        const n = nodeById.get(m);
-        return `${m}${n && n.exports.length ? ` (exports: ${n.exports.slice(0, 8).join(", ")})` : ""}`;
-      })
-      .join("\n");
+    // cap the listing so a thousand-file community stays a small prompt
+    const shown = community.members.slice(0, 40);
+    const fileList =
+      shown
+        .map((m) => {
+          const n = nodeById.get(m);
+          return `${m}${n && n.exports.length ? ` (exports: ${n.exports.slice(0, 8).join(", ")})` : ""}`;
+        })
+        .join("\n") +
+      (community.members.length > shown.length
+        ? `\n... and ${community.members.length - shown.length} more files like these`
+        : "");
     const keyFile = community.members
       .map((m) => nodeById.get(m)!)
       .sort((a, b) => b.degree - a.degree)[0];

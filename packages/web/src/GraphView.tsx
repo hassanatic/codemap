@@ -1,6 +1,5 @@
 import { useEffect, useRef } from "react";
 import Graph from "graphology";
-import { circular } from "graphology-layout";
 import forceAtlas2 from "graphology-layout-forceatlas2";
 import Sigma from "sigma";
 import type { AgentEvent, CodeGraph } from "@codemap/shared";
@@ -48,8 +47,31 @@ export function GraphView({ graph, events, selected, onSelect }: Props) {
         g.addEdge(edge.source, edge.target, { size: 0.6 });
       }
     }
-    circular.assign(g);
-    if (g.order > 2) {
+    // initial layout: each community is an island on a big circle, members
+    // spiraled around its center. Force atlas then refines it, but only when
+    // there are edges; on a link-free repo the islands ARE the layout, and
+    // running repulsion over them would just scatter everything into a blob.
+    const communityIds = [...new Set(graph.nodes.map((n) => n.community))];
+    const memberCounts = new Map<number, number>();
+    for (const n of graph.nodes) {
+      memberCounts.set(n.community, (memberCounts.get(n.community) ?? 0) + 1);
+    }
+    const maxRadius = Math.max(...[...memberCounts.values()].map((c) => 3 * Math.sqrt(c)));
+    const ringRadius = communityIds.length > 1 ? Math.max(60, maxRadius * 2.2) : 0;
+    const placed = new Map<number, number>();
+    const GOLDEN = 2.399963229728653;
+    for (const n of graph.nodes) {
+      const ci = communityIds.indexOf(n.community);
+      const angle = (2 * Math.PI * ci) / communityIds.length;
+      const cx = Math.cos(angle) * ringRadius;
+      const cy = Math.sin(angle) * ringRadius;
+      const j = placed.get(n.community) ?? 0;
+      placed.set(n.community, j + 1);
+      const r = 3 * Math.sqrt(j);
+      g.setNodeAttribute(n.id, "x", cx + Math.cos(j * GOLDEN) * r);
+      g.setNodeAttribute(n.id, "y", cy + Math.sin(j * GOLDEN) * r);
+    }
+    if (g.order > 2 && g.size > 0) {
       forceAtlas2.assign(g, {
         iterations: 300,
         settings: { ...forceAtlas2.inferSettings(g), gravity: 0.6 },
@@ -57,6 +79,9 @@ export function GraphView({ graph, events, selected, onSelect }: Props) {
     }
 
     const renderer = new Sigma(g, containerRef.current, {
+      // StrictMode double-mounts effects and the container can have no
+      // layout yet at that moment; render anyway and resize when it does
+      allowInvalidContainer: true,
       labelColor: { color: "#8b949e" },
       labelSize: 11,
       defaultEdgeColor: "#21262d",
@@ -81,7 +106,13 @@ export function GraphView({ graph, events, selected, onSelect }: Props) {
     renderer.on("clickNode", ({ node }) => onSelect(node));
     renderer.on("clickStage", () => onSelect(undefined));
     sigmaRef.current = renderer;
+    const observer = new ResizeObserver(() => {
+      renderer.resize();
+      renderer.refresh();
+    });
+    observer.observe(containerRef.current);
     return () => {
+      observer.disconnect();
       renderer.kill();
       sigmaRef.current = undefined;
     };

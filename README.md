@@ -30,7 +30,7 @@ indexer  ──►  .codemap/graph.json  ──►  mcp server  ──►  any M
                   web ui
 ```
 
-- **indexer**: parses JS/TS with ts-morph, builds file nodes and import edges, finds modules with Louvain community detection, flags the most connected files as god nodes, and generates summaries through the `claude` CLI so it reuses your existing login. Re-indexing is incremental by content hash, and the live server re-indexes automatically on file change so the map never lies.
+- **indexer**: maps any repo, whatever it is made of. JavaScript and TypeScript get precise import resolution through the TypeScript compiler; Python, Dart, and Markdown get dedicated resolvers (imports, package and relative paths, links and wiki links); Go, Rust, Java, Ruby, and the rest get best-effort import matching; and every text file is a node either way, with unlinked files grouped into modules by directory. Louvain community detection finds the modules, the most connected files become god nodes, and summaries come through the `claude` CLI so it reuses your existing login. Re-indexing is incremental by content hash, and the live server re-indexes automatically on file change so the map never lies.
 - **mcp server**: `get_overview`, `node_context`, `search_nodes`, and `impact_of` (transitive dependents of a file, the thing grep cannot tell you). Works with any MCP client.
 - **live server**: a Yjs CRDT sync host. The graph, the agent event stream, and pending directives are one shared document, so every open browser sees the same live state and updates arrive with no polling.
 - **web ui**: sigma.js force graph colored by module, node inspector with summaries and dependency lists, live activity feed, and a prompt composer on every node.
@@ -77,11 +77,11 @@ are in [docs/setup.md](docs/setup.md).
 
 ## Scope and roadmap
 
-v1 is deliberately narrow: JS/TS repos, file-level nodes, localhost. Next, roughly in order:
+v1 maps any local repo with file-level nodes: precise edges for JS/TS, resolver-based edges for Python, Dart, and Markdown, best-effort edges elsewhere. Next, roughly in order:
 
 - function-level nodes and call edges
 - hosted agent sessions through the Claude Agent SDK for instant mid-run steering instead of next-prompt delivery
-- more languages via tree-sitter
+- precise parsers (tree-sitter) for the languages that currently get best-effort matching
 - paste a GitHub URL to explore any repo
 
 ## License

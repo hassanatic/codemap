@@ -33,12 +33,11 @@ export default function App() {
       ) : graph.stats.files === 0 ? (
         <div className="empty">
           <p>
-            No JavaScript or TypeScript source files found in{" "}
-            <strong>{graph.root}</strong>.
+            No indexable files found in <strong>{graph.root}</strong>.
           </p>
           <p>
-            codemap v1 builds its graph from JS/TS import statements, so this
-            repo produces an empty map. More languages are on the roadmap.
+            codemap maps source code, markdown, and config files; this
+            directory has none it recognizes.
           </p>
         </div>
       ) : (

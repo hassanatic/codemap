@@ -34,9 +34,8 @@ async function main() {
   const secs = ((Date.now() - started) / 1000).toFixed(1);
   if (graph.stats.files === 0) {
     console.log(
-      `warning: no JavaScript or TypeScript source files found in ${repoRoot}.\n` +
-        `codemap v1 maps JS/TS projects by parsing import statements, so this ` +
-        `repo produces an empty graph. More languages are on the roadmap.`
+      `warning: no indexable files found in ${repoRoot}. codemap maps source ` +
+        `code, markdown, and config files; this directory has none it recognizes.`
     );
   } else {
     console.log(
