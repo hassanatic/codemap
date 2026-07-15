@@ -11,6 +11,15 @@ cd /path/to/your/repo && codemap up --summaries
 The rest of this document is the manual version, useful if you want to
 understand the pieces or wire them differently.
 
+## Requirements and authentication
+
+There are no API keys and no codemap account. You need node 20+ and git.
+The optional pieces lean on the Claude Code CLI being installed and logged
+in: summaries run through `claude -p` under your existing login, and the
+hooks and MCP server only matter if you run Claude Code sessions anyway.
+Without the CLI you still get the full indexed, live-updating map; you lose
+summaries, telemetry, node directives, and agent memory.
+
 Four pieces: index the repo, run the live server, open the UI, connect your agent.
 
 ## 1. Index

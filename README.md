@@ -65,10 +65,22 @@ registers the MCP server once for all your projects, and serves the live map
 at http://localhost:4401. It is idempotent, so run it again any time and it
 only changes what is missing.
 
-`--summaries` uses the `claude` CLI (your existing login, no API keys) to
-describe each module and each highly connected file. Drop the flag for a fast
-structure-only index. Requirements: node 20+, git, and the Claude Code CLI
-for summaries, hooks, and MCP.
+## What needs what (no API keys, ever)
+
+codemap has no keys, accounts, or configuration of its own. Everything runs
+on your machine:
+
+- **Indexing and the map**: plain parsing and graph math. Needs node 20+ and
+  git, nothing else. Works offline.
+- **Summaries** (`--summaries`): the one AI-powered feature. It shells out to
+  your installed `claude` CLI, so it reuses whatever login Claude Code
+  already has (subscription or key). codemap never sees or stores
+  credentials. No `claude` CLI means summaries are skipped and everything
+  else still works.
+- **Telemetry, node directives, MCP memory**: local plumbing. Hooks POST
+  events to localhost, the MCP server reads the graph file. The model doing
+  the coding is your own Claude Code session, authenticated and billed
+  exactly as it already is; codemap adds no calls of its own.
 
 Now run `claude` in the project like normal. Files flash on the map as the
 agent reads and edits them, and clicking any node lets you send it a directive
