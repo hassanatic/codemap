@@ -27,8 +27,19 @@ export default function App() {
       </header>
       {!graph ? (
         <div className="empty">
-          <p>Waiting for a graph. Start the server against an indexed repo:</p>
-          <pre>codemap index /path/to/repo{"\n"}codemap-server /path/to/repo</pre>
+          <p>Waiting for a graph. Point codemap at a repo:</p>
+          <pre>codemap up /path/to/repo</pre>
+        </div>
+      ) : graph.stats.files === 0 ? (
+        <div className="empty">
+          <p>
+            No JavaScript or TypeScript source files found in{" "}
+            <strong>{graph.root}</strong>.
+          </p>
+          <p>
+            codemap v1 builds its graph from JS/TS import statements, so this
+            repo produces an empty map. More languages are on the roadmap.
+          </p>
         </div>
       ) : (
         <main>

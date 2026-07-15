@@ -32,10 +32,18 @@ async function main() {
 
   const out = saveGraph(repoRoot, graph);
   const secs = ((Date.now() - started) / 1000).toFixed(1);
-  console.log(
-    `indexed ${graph.stats.files} files, ${graph.stats.edges} imports, ` +
-      `${graph.communities.length} communities in ${secs}s`
-  );
+  if (graph.stats.files === 0) {
+    console.log(
+      `warning: no JavaScript or TypeScript source files found in ${repoRoot}.\n` +
+        `codemap v1 maps JS/TS projects by parsing import statements, so this ` +
+        `repo produces an empty graph. More languages are on the roadmap.`
+    );
+  } else {
+    console.log(
+      `indexed ${graph.stats.files} files, ${graph.stats.edges} imports, ` +
+        `${graph.communities.length} communities in ${secs}s`
+    );
+  }
   console.log(`graph written to ${out}`);
 }
 
