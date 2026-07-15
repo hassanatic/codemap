@@ -125,7 +125,7 @@ function ensureMcp() {
   );
 }
 
-function serve(repo) {
+function serve(repo, withSummaries) {
   const children = [];
   let shuttingDown = false;
   const shutdown = (code) => {
@@ -157,7 +157,9 @@ function serve(repo) {
     children.push(child);
   };
 
-  run("server", "node", [join(codemapRoot, "packages/server/dist/index.js"), repo]);
+  const serverArgs = [join(codemapRoot, "packages/server/dist/index.js"), repo];
+  if (withSummaries) serverArgs.push("--summaries");
+  run("server", "node", serverArgs);
   run("web", "npm", ["run", "dev", "-w", "@codemap/web"], { cwd: codemapRoot });
   console.log(`codemap up for ${repo}`);
   console.log("  ui: http://localhost:4401");
@@ -180,7 +182,7 @@ if (command === "index") {
   ensureHooks(repo);
   ensureGitignore(repo);
   ensureMcp();
-  serve(repo);
+  serve(repo, flags.includes("--summaries"));
 } else {
   usage();
   process.exit(command === "help" || command === undefined ? 0 : 1);

@@ -75,8 +75,10 @@ on your machine:
 - **Summaries** (`--summaries`): the one AI-powered feature. It shells out to
   your installed `claude` CLI, so it reuses whatever login Claude Code
   already has (subscription or key). codemap never sees or stores
-  credentials. No `claude` CLI means summaries are skipped and everything
-  else still works.
+  credentials. With the flag on, the live server also fills in summaries for
+  new and changed files as you (or your agent) create them, so a project
+  started from an empty folder grows a described map on its own. No `claude`
+  CLI means summaries are skipped and everything else still works.
 - **Telemetry, node directives, MCP memory**: local plumbing. Hooks POST
   events to localhost, the MCP server reads the graph file. The model doing
   the coding is your own Claude Code session, authenticated and billed

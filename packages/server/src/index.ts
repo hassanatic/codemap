@@ -15,7 +15,7 @@ import { WebSocketServer } from "ws";
 import * as Y from "yjs";
 import chokidar from "chokidar";
 import { setupWSConnection, getYDoc } from "y-websocket/bin/utils";
-import { indexRepo, loadGraph, saveGraph } from "@codemap/indexer";
+import { indexRepo, loadGraph, saveGraph, summarizeGraph } from "@codemap/indexer";
 import {
   AgentEvent,
   NodePrompt,
@@ -25,9 +25,11 @@ import {
 
 const PORT = Number(process.env.PORT || 4400);
 const ROOM = "codemap";
-const repoArg = process.argv[2] || process.env.CODEMAP_REPO;
+const args = process.argv.slice(2);
+const liveSummaries = args.includes("--summaries");
+const repoArg = args.find((a) => !a.startsWith("--")) || process.env.CODEMAP_REPO;
 if (!repoArg) {
-  console.error("usage: codemap-server <repo-path>   (an indexed repo)");
+  console.error("usage: codemap-server <repo-path> [--summaries]");
   process.exit(1);
 }
 const repoRoot = resolve(repoArg);
@@ -49,6 +51,25 @@ function publishGraph(g: CodeGraph) {
   yGraph.set("data", JSON.parse(JSON.stringify(g)));
 }
 publishGraph(graph);
+
+// With --summaries the server keeps descriptions current as the repo grows:
+// after any re-index, missing summaries (new or changed files and modules)
+// are filled in through the claude CLI, then the doc updates again.
+let summarizing = false;
+function fillSummaries(g: CodeGraph) {
+  if (!liveSummaries || summarizing) return;
+  summarizing = true;
+  summarizeGraph(repoRoot, g)
+    .then(() => {
+      saveGraph(repoRoot, g);
+      publishGraph(g);
+    })
+    .catch((err) => console.error("summaries failed:", err))
+    .finally(() => {
+      summarizing = false;
+    });
+}
+fillSummaries(graph);
 
 function pushEvent(event: AgentEvent) {
   doc.transact(() => {
@@ -180,6 +201,7 @@ watcher.on("all", (_evt, path) => {
       console.log(
         `re-indexed after change (${((Date.now() - started) / 1000).toFixed(1)}s, ${next.stats.files} files)`
       );
+      fillSummaries(next);
     } catch (err) {
       console.error("re-index failed:", err);
     }
